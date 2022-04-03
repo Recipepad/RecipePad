@@ -1,35 +1,34 @@
 CREATE DATABASE `recipepad`;
 CREATE TABLE `user_account` (
-  `Username` varchar(20) NOT NULL,
+  `username` varchar(20) NOT NULL,
   `password` varchar(20) NOT NULL,
-  `UID` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`Username`),
-  UNIQUE KEY `UID_UNIQUE` (`UID`)
+  `uid` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 CREATE TABLE `user_profile` (
-  `UID` int(11) NOT NULL,
+  `uid` int(11) unsigned NOT NULL,
   `nickname` varchar(45) DEFAULT NULL,
   `email` varchar(45) DEFAULT NULL,
-  `avatar_imgID` int(11) DEFAULT NULL,
-  PRIMARY KEY (`UID`)
+  `avatar_imgid` int(11) unsigned DEFAULT NULL,
+  PRIMARY KEY (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 CREATE TABLE `recipes` (
-  `RID` int(11) NOT NULL,
+  `rid` int(11) unsigned NOT NULL,
   `title` varchar(45) DEFAULT NULL,
-  `cover_imgID` int(11) DEFAULT NULL,
+  `cover_imgid` int(11) unsigned DEFAULT NULL,
   `description` varchar(300) DEFAULT NULL,
   `ingredients` json DEFAULT NULL,
   `steps` json DEFAULT NULL,
   `tags` json DEFAULT NULL,
-  PRIMARY KEY (`RID`)
+  PRIMARY KEY (`rid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 CREATE TABLE `user_recipes` (
-  `UID` int(11) NOT NULL,
-  `RID` int(11) NOT NULL,
-  PRIMARY KEY (`UID`,`RID`)
+  `uid` int(11) unsigned NOT NULL,
+  `rid` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`uid`,`rid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 CREATE TABLE `user_bookmark` (
-  `UID` int(11) NOT NULL,
-  `RID` int(11) NOT NULL,
-  PRIMARY KEY (`UID`,`RID`)
+  `uid` int(11) unsigned NOT NULL,
+  `rid` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`uid`,`rid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

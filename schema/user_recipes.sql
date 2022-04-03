@@ -1,5 +1,5 @@
 CREATE TABLE `user_recipes` (
-  `UID` int(11) NOT NULL,
-  `RID` int(11) NOT NULL,
-  PRIMARY KEY (`UID`,`RID`)
+  `uid` int(11) unsigned NOT NULL,
+  `rid` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`uid`,`rid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
