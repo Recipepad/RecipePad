@@ -1,0 +1,6 @@
+mysql:
+  host: "recipepad.mysql.database.azure.com"
+  port: 3306
+  user: "recipeadmin"
+  password: "Food1234"
+  ca_path: "configs/DigiCertGlobalRootCA.crt.pem"
