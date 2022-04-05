@@ -1,6 +1,7 @@
 CREATE TABLE `user_account` (
   `username` varchar(20) NOT NULL,
   `password` varchar(20) NOT NULL,
-  `uid` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`uid`,`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  `uid` int unsigned NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`uid`),
+UNIQUE KEY `username_UNIQUE` (`username`)
+) ENGINE=InnoDB AUTO_INCREMENT=1007 DEFAULT CHARSET=latin1;
