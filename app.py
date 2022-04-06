@@ -37,6 +37,7 @@ def login():
         else:
             session['loggedin'] = True
             session['username'] = username
+            session['uid'] = account.uid
             msg = 'Logged in successfully !'
             return render_template('index.html', msg=msg)
     return render_template('login.html', msg=msg)
@@ -45,6 +46,7 @@ def login():
 def logout():
     session.pop('loggedin', None)
     session.pop('username', None)
+    session.pop('uid', None)
     return redirect(url_for('login'))
 
 
@@ -60,6 +62,7 @@ def register():
             db.session.commit()
             session['loggedin'] = True
             session['username'] = username
+            session['uid'] = account.uid
             msg = 'You have successfully registered !'
             return render_template('index.html', msg=msg)
         except IntegrityError:

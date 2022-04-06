@@ -14,7 +14,7 @@ CREATE TABLE `user_profile` (
   PRIMARY KEY (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 CREATE TABLE `recipes` (
-  `rid` int(11) unsigned NOT NULL,
+  `rid` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(45) DEFAULT NULL,
   `cover_imgid` int(11) unsigned DEFAULT NULL,
   `description` varchar(300) DEFAULT NULL,
