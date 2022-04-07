@@ -18,8 +18,10 @@ from models import *
 
 @app.route("/hello")
 def hello():
+    msg = ''
     version = db.engine.execute("select VERSION()").all()[0][0]
-    return "Hello RecipePad in Cloud with MySQL " + str(version)
+    # return "Hello RecipePad in Cloud with MySQL " + str(version)
+    return render_template('home.html', msg=msg)
 
 
 @app.route('/login', methods=['GET', 'POST'])
