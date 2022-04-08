@@ -61,3 +61,11 @@ class UserRecipe(db.Model):
 
     def __repr__(self):
         return f"uid: {self.username}, rid: {self.password}"
+
+
+class UserBookmark(db.Model):
+    uid = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
+    rid = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
+
+    def __repr__(self):
+        return f"uid: {self.uid}, rid: {self.rid}"

@@ -1,0 +1,23 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title> Get Bookmark </title>
+    </head>
+    <body></br></br></br></br></br>
+        <div align="center">
+          <div align="center" class="border">
+             <div class="header">
+                <h1 class="word">Get Bookmark List Test</h1>
+             </div></br></br></br>
+            <h2 class="word">
+                <form action="{{ url_for('get_bookmark') }}" method="post">
+                  <div class="msg">{{ msg }}</div>
+                    <input id="uid" name="uid" type="int" placeholder="Enter uid" class="textbox"/></br></br>
+                    <input type="submit" class="btn" value="get bookmark list"></br></br>
+                </form>
+            </h2>
+              <p class="bottom"><a class="bottom" href="{{url_for('bookmark')}}"> Go to Bookmark</a></p>
+          </div>
+        </div>
+    </body>
+</html>

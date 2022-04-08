@@ -119,8 +119,69 @@ def create_recipe():
     return response, 200
 
 
+@app.route('/bookmark', methods=['GET', 'POST'])
+def bookmark():
+    msg = ''
 
+    if request.method == 'POST':
+        # TODO: change data from form to json
+        data = request.form
 
+        required_fields = ['uid', 'rid']
+        for field in required_fields:
+            if field not in data:
+                abort(400, f"{field} not found in the form")
+
+        uid = data['uid']
+        rid = data['rid']
+
+        try:
+            if db.session.query(UserAccount).filter_by(uid=uid).first() is None:
+                msg = 'fail to bookmark ({uid}, {rid}), uid {uid} not found'.format(uid=uid, rid=rid)
+            elif db.session.query(Recipe).filter_by(rid=rid).first() is None:
+                msg = 'fail to bookmark ({uid}, {rid}), rid {rid} not found'.format(uid=uid, rid=rid)
+            else:
+                bookmark = UserBookmark(uid=uid, rid=rid)
+                db.session.add(bookmark)
+                db.session.commit()
+                msg = 'successful bookmark ({uid}, {rid})'.format(uid=uid, rid=rid)
+        except IntegrityError:
+            msg = 'fail to bookmark ({uid}, {rid}): Already bookmarked'.format(uid=uid, rid=rid)
+        except Exception as e:
+            msg = str(e)
+
+        # TODO: redirect to recipe(rid) page
+        return render_template('bookmark_test.html', msg=msg)
+
+    return render_template('bookmark_test.html', msg=msg)
+
+# TODO: change the naming
+@app.route('/get_bookmark', methods=['GET', 'POST'])
+def get_bookmark():
+    if request.method == 'GET':
+        return render_template('get_bookmark_test.html')
+
+    # TODO: change data from form to json
+    data = request.form
+
+    required_fields = ['uid']
+    for field in required_fields:
+        if field not in data:
+            abort(400, f"{field} not found in the form")
+
+    uid = data['uid']
+
+    try:
+        if db.session.query(UserAccount).filter_by(uid=uid).first() is None:
+            msg = 'Fail: uid {uid} not found'.format(uid=uid)
+        else:
+            results = db.session.query(UserBookmark.rid).filter_by(uid=uid).all()
+            results = [r[0] for r in results]
+            msg = str(results)
+    except Exception as e:
+        msg = str(e)
+
+    return render_template('get_bookmark_test.html', msg=msg)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
