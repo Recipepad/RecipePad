@@ -1,4 +1,4 @@
-CREATE TABLE `user_recipes` (
+CREATE TABLE `user_recipe` (
   `uid` int(11) unsigned NOT NULL,
   `rid` int(11) unsigned NOT NULL,
   PRIMARY KEY (`uid`,`rid`)

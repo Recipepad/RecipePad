@@ -13,17 +13,17 @@ CREATE TABLE `user_profile` (
   `avatar_imgid` int(11) unsigned DEFAULT NULL,
   PRIMARY KEY (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-CREATE TABLE `recipes` (
+CREATE TABLE `recipe` (
   `rid` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(45) DEFAULT NULL,
-  `cover_imgid` int(11) unsigned DEFAULT NULL,
+  `cover_imgid` varchar(45) DEFAULT NULL,
   `description` varchar(300) DEFAULT NULL,
   `ingredients` json DEFAULT NULL,
   `steps` json DEFAULT NULL,
   `tags` json DEFAULT NULL,
   PRIMARY KEY (`rid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-CREATE TABLE `user_recipes` (
+CREATE TABLE `user_recipe` (
   `uid` int(11) unsigned NOT NULL,
   `rid` int(11) unsigned NOT NULL,
   PRIMARY KEY (`uid`,`rid`)
