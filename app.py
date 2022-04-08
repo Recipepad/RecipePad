@@ -27,8 +27,8 @@ def hello():
 def login():
     msg = ''
     if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
-        username = request.form['username']
-        password = request.form['password']
+        username = request.json['username']
+        password = request.json['password']
 
         account = UserAccount.query.filter_by(username=username).first()
         if account is None:
@@ -54,9 +54,9 @@ def logout():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     msg = ''
-    if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
-        username = request.form['username']
-        password = request.form['password']
+    if request.method == 'POST' and 'username' in request.json and 'password' in request.json:
+        username = request.json['username']
+        password = request.json['password']
         try:
             account = UserAccount(username=username, password=password)
             db.session.add(account)
@@ -75,8 +75,6 @@ def register():
 
 @app.route('/recipe', methods=['POST'])
 def create_recipe():
-    print("---------")
-    print(request.json)
     # Validate form
     required_fields = ['title', 'uid', 'description', 'ingredients', 'steps']
     for field in required_fields:
