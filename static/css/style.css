@@ -275,7 +275,7 @@ ol {
 .footer-menu {
 	list-style: none;
 	float: right;
-	margin-right: 160px;
+	margin-right: 50px;
 }
 
 .main-menu li,
@@ -1695,4 +1695,10 @@ ol {
 	.recipe .recipe-info-warp {
 		padding-right: 0;
 	}
+}
+
+#navbar-btn {
+	background-color: #ff2a6b;
+    border-style: none;
+	cursor: pointer;
 }

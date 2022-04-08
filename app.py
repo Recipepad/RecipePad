@@ -23,7 +23,6 @@ def hello():
     # return "Hello RecipePad in Cloud with MySQL " + str(version)
     return render_template('home.html', msg=msg)
 
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     msg = ''
@@ -72,6 +71,16 @@ def register():
     elif request.method == 'POST':
         msg = 'Please fill out the form !'
     return render_template('register.html', msg=msg)
+
+@app.route("/about")
+def about():
+    msg = ''
+    return render_template('about.html', msg=msg)
+
+@app.route("/recipes")
+def recipes():
+    msg = ''
+    return render_template('recipes.html', msg=msg)
 
 
 if __name__ == "__main__":
