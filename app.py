@@ -26,6 +26,7 @@ def hello():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     msg = ''
+    # TODO unify post content type form -> json
     if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
         username = request.json['username']
         password = request.json['password']
@@ -54,6 +55,7 @@ def logout():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     msg = ''
+    # TODO unify post content type form -> json
     if request.method == 'POST' and 'username' in request.json and 'password' in request.json:
         username = request.json['username']
         password = request.json['password']
