@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, redirect, url_for
+from flask import Flask, render_template, request, session, redirect, url_for, abort, Response
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
 
@@ -14,6 +14,7 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = config.mysql_connect_args
 db = SQLAlchemy(app)
 
 from models import *
+from utils import *
 
 
 @app.route("/hello")
@@ -25,6 +26,7 @@ def hello():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     msg = ''
+    # TODO unify post content type form -> json
     if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
         username = request.form['username']
         password = request.form['password']
@@ -53,6 +55,7 @@ def logout():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     msg = ''
+    # TODO unify post content type form -> json
     if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
         username = request.form['username']
         password = request.form['password']
@@ -70,6 +73,53 @@ def register():
     elif request.method == 'POST':
         msg = 'Please fill out the form !'
     return render_template('register.html', msg=msg)
+
+
+@app.route('/recipe', methods=['POST'])
+def create_recipe():
+    # Validate form
+    required_fields = ['title', 'uid', 'description', 'ingredients', 'steps']
+    for field in required_fields:
+        if field not in request.json:
+            abort(400, f"{field} not found in the form")
+
+    title = request.json['title']
+    uid = request.json['uid']
+    description = request.json['description']
+    ingredients = request.json['ingredients']  # JSON
+    steps = request.json['steps']  # JSON
+
+    tags = get_tags_from_description_and_title(description, title)  # JSON
+    step_img_cnt = get_image_count_from_steps(steps)
+    cover_imgid = get_cover_image_id(uid)
+    step_imgids = get_step_image_ids(uid, step_img_cnt)
+    steps = get_updated_steps_with_image_ids(steps, step_imgids)
+
+    recipe = Recipe(
+        title=title,
+        cover_imgid=cover_imgid,
+        description=description,
+        ingredients=ingredients,
+        steps=steps,
+        tags=tags,
+    )
+
+    db.session.add(recipe)
+    db.session.commit()
+
+    user_recipe = UserRecipe(uid=uid, rid=recipe.rid)
+    db.session.add(user_recipe)
+    db.session.commit()
+
+    response = {
+        'cover_image_url': f'fake/cover/url/{cover_imgid}',
+        'step_image_urls': [f'fake/step/url/{rid}' for rid in step_imgids]
+    }
+
+    return response, 200
+
+
+
 
 
 if __name__ == "__main__":
