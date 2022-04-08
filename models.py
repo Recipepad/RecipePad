@@ -7,7 +7,7 @@ class UserAccount(db.Model):
     uid = db.Column(db.Integer, primary_key=True)
 
     def __repr__(self):
-        return f"username: {self.username}, password: {self.password}"
+        return f"username: {self.username}, password: {self.password}, uid: {self.uid}"
 
 
 """
