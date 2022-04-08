@@ -28,8 +28,8 @@ def login():
     msg = ''
     # TODO unify post content type form -> json
     if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
-        username = request.json['username']
-        password = request.json['password']
+        username = request.form['username']
+        password = request.form['password']
 
         account = UserAccount.query.filter_by(username=username).first()
         if account is None:
@@ -56,9 +56,9 @@ def logout():
 def register():
     msg = ''
     # TODO unify post content type form -> json
-    if request.method == 'POST' and 'username' in request.json and 'password' in request.json:
-        username = request.json['username']
-        password = request.json['password']
+    if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
+        username = request.form['username']
+        password = request.form['password']
         try:
             account = UserAccount(username=username, password=password)
             db.session.add(account)
