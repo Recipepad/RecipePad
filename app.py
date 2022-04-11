@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, session, redirect, url_for, abort, Response
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
+from flask_cors import CORS
 
 import os
 
@@ -11,6 +12,7 @@ app = Flask(__name__)
 app.secret_key = "recipe secret key"
 app.config['SQLALCHEMY_DATABASE_URI'] = config.mysql_uri
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = config.mysql_connect_args
+CORS(app)
 db = SQLAlchemy(app)
 
 from models import *
@@ -26,10 +28,9 @@ def hello():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     msg = ''
-    # TODO unify post content type form -> json
-    if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
-        username = request.form['username']
-        password = request.form['password']
+    if request.method == 'POST' and 'username' in request.json and 'password' in request.json:
+        username = request.json['username']
+        password = request.json['password']
 
         account = UserAccount.query.filter_by(username=username).first()
         if account is None:
@@ -41,8 +42,8 @@ def login():
             session['username'] = username
             session['uid'] = account.uid
             msg = 'Logged in successfully !'
-            return render_template('index.html', msg=msg)
-    return render_template('login.html', msg=msg)
+            return msg, 200
+    return msg, 400
 
 @app.route('/logout')
 def logout():
@@ -55,10 +56,9 @@ def logout():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     msg = ''
-    # TODO unify post content type form -> json
-    if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
-        username = request.form['username']
-        password = request.form['password']
+    if request.method == 'POST' and 'username' in request.json and 'password' in request.json:
+        username = request.json['username']
+        password = request.json['password']
         try:
             account = UserAccount(username=username, password=password)
             db.session.add(account)
@@ -66,13 +66,12 @@ def register():
             session['loggedin'] = True
             session['username'] = username
             session['uid'] = account.uid
-            msg = 'You have successfully registered !'
-            return render_template('index.html', msg=msg)
+            return {"uid": account.uid}, 200
         except IntegrityError:
             msg = 'Error: user name has been registered'
     elif request.method == 'POST':
         msg = 'Please fill out the form !'
-    return render_template('register.html', msg=msg)
+    return msg, 400
 
 
 @app.route('/recipe', methods=['POST'])
@@ -117,7 +116,6 @@ def create_recipe():
     }
 
     return response, 200
-
 
 
 
