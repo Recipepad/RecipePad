@@ -69,3 +69,15 @@ class UserBookmark(db.Model):
 
     def __repr__(self):
         return f"uid: {self.uid}, rid: {self.rid}"
+
+class UserProfile(db.Model):
+    uid = db.Column(db.Integer, primary_key=True, nullable=False)
+    nickname = db.Column(db.String(45), nullable=True)
+    email = db.Column(db.String(45), nullable=True)
+    avatar_imgid = db.Column(db.Integer, nullable=True)
+
+    def __repr__(self):
+        return f"uid: {self.uid}, nickname: {self.nickname}, email: {self.email}, avatar_imgid: {self.avatar_imgid}"
+
+    def to_dict(self):
+        return {'uid':self.uid, 'nickname':self.nickname, 'email':self.email, 'avatar_imgid':self.avatar_imgid}
