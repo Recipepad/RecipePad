@@ -54,6 +54,11 @@ class Recipe(db.Model):
                f"description: {self.description}, ingredients: {self.ingredients}, steps: {self.steps}, " \
                f"tags: {self.tags}"
 
+    def to_dict(self):
+        return {'rid':self.rid, 'title':self.title, 'cover_imgid':self.cover_imgid, \
+                'description':self.description, 'ingredients':self.ingredients, 'steps':self.steps, \
+                'tags':self.tags}
+
 
 class UserRecipe(db.Model):
     uid = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)

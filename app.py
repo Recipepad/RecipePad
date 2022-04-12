@@ -219,6 +219,23 @@ def profile():
         db.session.commit()
         return {'success':True}, 200
 
+# TODO: ugly name
+@app.route('/recipeid', methods=['GET'])
+def recipeid():
+    data = request.json
+    required_fields = ['rid']
+    for field in required_fields:
+        if field not in data:
+            abort(400, f"{field} not found in the form")
+
+    rid = data['rid']
+    result = db.session.query(Recipe).filter_by(rid=rid).first()
+    if result is None:
+        return {'success':False, 'error':'rid not exists in Recipe table'}, 400
+    result = result.to_dict()
+    result['success'] = True
+    return result, 200
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(debug=True, host='0.0.0.0', port=port)
