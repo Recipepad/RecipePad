@@ -54,6 +54,11 @@ class Recipe(db.Model):
                f"description: {self.description}, ingredients: {self.ingredients}, steps: {self.steps}, " \
                f"tags: {self.tags}"
 
+    def to_dict(self):
+        return {'rid':self.rid, 'title':self.title, 'cover_imgid':self.cover_imgid, \
+                'description':self.description, 'ingredients':self.ingredients, 'steps':self.steps, \
+                'tags':self.tags}
+
 
 class UserRecipe(db.Model):
     uid = db.Column(db.Integer, primary_key=True, unique=True, nullable=False)
@@ -69,3 +74,15 @@ class UserBookmark(db.Model):
 
     def __repr__(self):
         return f"uid: {self.uid}, rid: {self.rid}"
+
+class UserProfile(db.Model):
+    uid = db.Column(db.Integer, primary_key=True, nullable=False)
+    nickname = db.Column(db.String(45), nullable=True)
+    email = db.Column(db.String(45), nullable=True)
+    avatar_imgid = db.Column(db.Integer, nullable=True)
+
+    def __repr__(self):
+        return f"uid: {self.uid}, nickname: {self.nickname}, email: {self.email}, avatar_imgid: {self.avatar_imgid}"
+
+    def to_dict(self):
+        return {'uid':self.uid, 'nickname':self.nickname, 'email':self.email, 'avatar_imgid':self.avatar_imgid}

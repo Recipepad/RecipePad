@@ -66,6 +66,9 @@ def register():
             session['loggedin'] = True
             session['username'] = username
             session['uid'] = account.uid
+            profile = UserProfile(uid=account.uid)
+            db.session.add(profile)
+            db.session.commit()
             return {"uid": account.uid}, 200
         except IntegrityError:
             msg = 'Error: user name has been registered'
@@ -181,6 +184,47 @@ def get_bookmark():
         msg = str(e)
         
     return render_template('get_bookmark_test.html', msg=msg)
+
+
+@app.route('/profile/<int:uid>', methods=['GET'])
+def get_profile(uid):
+    if db.session.query(UserAccount).filter_by(uid=uid).first() is None:
+        return {'success': False}, 400
+    result = db.session.query(UserProfile).filter_by(uid=uid).first()
+    result = result.to_dict()
+    result['success'] = True
+    return result, 200
+
+
+@app.route('/profile', methods=['POST'])
+def profile():
+    data = request.json
+    required_fields = ['uid', 'nickname', 'email', 'avatar_imgid']
+    for field in required_fields:
+        if field not in data:
+            abort(400, f"{field} not found in the form")
+
+    uid = data['uid']
+    nickname = data['nickname']
+    email = data['email']
+    avatar_imgid = data['avatar_imgid']
+
+    if db.session.query(UserAccount).filter_by(uid=uid).first() is None:
+        return {'success':False}, 400
+    db.session.query(UserProfile).update({'uid':uid, 'nickname':nickname, 'email':email, 'avatar_imgid':avatar_imgid})
+    db.session.commit()
+    return {'success':True}, 200
+
+
+@app.route('/recipe/<int:rid>', methods=['GET'])
+def get_recipe(rid):
+    result = db.session.query(Recipe).filter_by(rid=rid).first()
+    if result is None:
+        return {'success':False, 'error':'rid not exists in Recipe table'}, 400
+    result = result.to_dict()
+    result['success'] = True
+    return result, 200
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
