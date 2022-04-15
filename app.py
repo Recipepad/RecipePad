@@ -41,16 +41,15 @@ def login():
             session['loggedin'] = True
             session['username'] = username
             session['uid'] = account.uid
-            msg = 'Logged in successfully !'
-            return msg, 200
-    return msg, 400
+            return {'uid': account.uid}, 200
+    return {'error': msg}, 400
 
 @app.route('/logout')
 def logout():
     session.pop('loggedin', None)
     session.pop('username', None)
     session.pop('uid', None)
-    return redirect(url_for('login'))
+    return 200
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -74,7 +73,7 @@ def register():
             msg = 'Error: user name has been registered'
     elif request.method == 'POST':
         msg = 'Please fill out the form !'
-    return msg, 400
+    return {'error': msg}, 400
 
 
 @app.route('/recipe', methods=['POST'])
