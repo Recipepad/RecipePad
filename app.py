@@ -49,7 +49,7 @@ def logout():
     session.pop('loggedin', None)
     session.pop('username', None)
     session.pop('uid', None)
-    return 200
+    return {"status": 200}, 200
 
 
 @app.route('/register', methods=['GET', 'POST'])
