@@ -4,9 +4,7 @@ import json
 
 # TODO Fulfill with meaningful tags
 def get_tags_from_description_and_title(description, title):
-    return {
-        'tags': ['food']
-    }
+    return ['food']
 
 
 def get_cover_image_id(uid):

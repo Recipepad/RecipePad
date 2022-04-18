@@ -90,7 +90,7 @@ def create_recipe():
     ingredients = request.json['ingredients']  # JSON
     steps = request.json['steps']  # JSON
 
-    tags = get_tags_from_description_and_title(description, title)  # JSON
+    tags = get_tags_from_description_and_title(description, title)
     step_img_cnt = get_image_count_from_steps(steps)
     cover_imgid = get_cover_image_id(uid)
     step_imgids = get_step_image_ids(uid, step_img_cnt)
