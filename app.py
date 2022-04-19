@@ -6,6 +6,7 @@ from flask_cors import CORS
 import os
 
 from config import Config
+from CosmosClient import CosmosClient
 
 config = Config()
 app = Flask(__name__)
@@ -14,6 +15,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = config.mysql_uri
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = config.mysql_connect_args
 CORS(app)
 db = SQLAlchemy(app)
+cosmos_client = CosmosClient(config)
 
 from models import *
 from utils import *
@@ -43,6 +45,7 @@ def login():
             session['uid'] = account.uid
             return {'uid': account.uid}, 200
     return {'error': msg}, 400
+
 
 @app.route('/logout')
 def logout():
@@ -156,6 +159,7 @@ def bookmark():
 
     return render_template('bookmark_test.html', msg=msg)
 
+
 # TODO: change the naming
 @app.route('/get_bookmark', methods=['GET', 'POST'])
 def get_bookmark():
@@ -181,7 +185,7 @@ def get_bookmark():
             msg = str(results)
     except Exception as e:
         msg = str(e)
-        
+
     return render_template('get_bookmark_test.html', msg=msg)
 
 
@@ -209,20 +213,32 @@ def profile():
     avatar_imgid = data['avatar_imgid']
 
     if db.session.query(UserAccount).filter_by(uid=uid).first() is None:
-        return {'success':False}, 400
-    db.session.query(UserProfile).update({'uid':uid, 'nickname':nickname, 'email':email, 'avatar_imgid':avatar_imgid})
+        return {'success': False}, 400
+    db.session.query(UserProfile).update(
+        {'uid': uid, 'nickname': nickname, 'email': email, 'avatar_imgid': avatar_imgid})
     db.session.commit()
-    return {'success':True}, 200
+    return {'success': True}, 200
 
 
 @app.route('/recipe/<int:rid>', methods=['GET'])
 def get_recipe(rid):
     result = db.session.query(Recipe).filter_by(rid=rid).first()
     if result is None:
-        return {'success':False, 'error':'rid not exists in Recipe table'}, 400
+        return {'success': False, 'error': 'rid not exists in Recipe table'}, 400
     result = result.to_dict()
     result['success'] = True
     return result, 200
+
+
+# keywords separated by `:`
+@app.route('/search/<keywords>', methods=['GET'])
+def search_recipe_ids_by_keywords(keywords):
+    keywords = keywords.split(':')
+    rids = []
+    for keyword in keywords:
+        rids.extend(cosmos_client.get_rids(keyword))
+
+    return {"rids": rids}, 200
 
 
 if __name__ == "__main__":
