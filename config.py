@@ -70,22 +70,3 @@ class Config:
     @property
     def cosmos_container(self):
         return self.config['cosmos']['cosmos_container']
-
-
-if __name__ == '__main__':
-    config = Config()
-    print(config.cosmos_uri)
-
-
-
-
-
-
-
-
-
-
-
-
-
-

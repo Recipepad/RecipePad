@@ -237,7 +237,7 @@ def search_recipe_ids_by_keywords(keywords):
     rids = []
     for keyword in keywords:
         rids.extend(cosmos_client.get_rids(keyword))
-        
+
     return {"rids": rids}, 200
 
 
