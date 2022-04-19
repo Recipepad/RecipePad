@@ -54,3 +54,38 @@ class Config:
                 'ssl': {'ca': self.ca_path}
             }
         }
+
+    @property
+    def cosmos_uri(self):
+        return self.config['cosmos']['cosmos_uri']
+
+    @property
+    def cosmos_key(self):
+        return self.config['cosmos']['cosmos_key']
+
+    @property
+    def cosmos_db(self):
+        return self.config['cosmos']['cosmos_db']
+
+    @property
+    def cosmos_container(self):
+        return self.config['cosmos']['cosmos_container']
+
+
+if __name__ == '__main__':
+    config = Config()
+    print(config.cosmos_uri)
+
+
+
+
+
+
+
+
+
+
+
+
+
+

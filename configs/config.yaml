@@ -5,3 +5,9 @@ mysql:
   user: "recipeadmin"
   password: "Food1234"
   ca_path: "configs/DigiCertGlobalRootCA.crt.pem"
+
+cosmos:
+  cosmos_uri: "https://recipepad.documents.azure.com:443/"
+  cosmos_key: "c3vk3rTL6bMcXUXVjBeupwOsuoEpNz29k0qRgZPRNtlTaVOdFcrPRckoteAXN3u6bhkcHWuLGEhiNUpwRj6Whw=="
+  cosmos_db: "search"
+  cosmos_container: "tags"
