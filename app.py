@@ -37,10 +37,10 @@ def hello():
 
 @app.route("/auth")
 def get_current_user():
-    uid = session.get('uid')
-    if not uid:
-        return {"error": "Unathorized"}, 401
-
+    # uid = session.get('uid')
+    # if not uid:
+    #     return {"error": "Unathorized"}, 401
+    # TODO figure out how to work on cloud
     return {"uid": uid, "isAuth": True}, 200
 
 
