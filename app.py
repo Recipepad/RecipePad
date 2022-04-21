@@ -217,7 +217,7 @@ def get_profile(uid):
 
 
 @app.route('/profile', methods=['POST'])
-def profile():
+def create_profile():
     data = request.json
     required_fields = ['uid', 'nickname', 'email', 'avatar_imgid']
     for field in required_fields:
