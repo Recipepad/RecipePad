@@ -140,41 +140,31 @@ def create_recipe():
     return response, 200
 
 
-@app.route('/bookmark', methods=['GET', 'POST'])
-def bookmark():
-    msg = ''
+@app.route('/create_bookmark', methods=['POST'])
+def create_bookmark():
+    data = request.json
 
-    if request.method == 'POST':
-        # TODO: change data from form to json
-        data = request.form
+    required_fields = ['uid', 'rid']
+    for field in required_fields:
+        if field not in data:
+            abort(400, f"{field} not found in the form")
 
-        required_fields = ['uid', 'rid']
-        for field in required_fields:
-            if field not in data:
-                abort(400, f"{field} not found in the form")
+    uid = data['uid']
+    rid = data['rid']
 
-        uid = data['uid']
-        rid = data['rid']
+    try:
+        if db.session.query(UserAccount).filter_by(uid=uid).first() is None:
+            return {'success':False, 'error':"Uid not Found"}, 400
+        elif db.session.query(Recipe).filter_by(rid=rid).first() is None:
+            return {'success':False, 'error':"Rid not Found"}, 400
+        else:
+            bookmark = UserBookmark(uid=uid, rid=rid)
+            db.session.add(bookmark)
+            db.session.commit()
+    except IntegrityError:
+        return {'success':False, 'error':"Bookmark already existed"}, 400
 
-        try:
-            if db.session.query(UserAccount).filter_by(uid=uid).first() is None:
-                msg = 'fail to bookmark ({uid}, {rid}), uid {uid} not found'.format(uid=uid, rid=rid)
-            elif db.session.query(Recipe).filter_by(rid=rid).first() is None:
-                msg = 'fail to bookmark ({uid}, {rid}), rid {rid} not found'.format(uid=uid, rid=rid)
-            else:
-                bookmark = UserBookmark(uid=uid, rid=rid)
-                db.session.add(bookmark)
-                db.session.commit()
-                msg = 'successful bookmark ({uid}, {rid})'.format(uid=uid, rid=rid)
-        except IntegrityError:
-            msg = 'fail to bookmark ({uid}, {rid}): Already bookmarked'.format(uid=uid, rid=rid)
-        except Exception as e:
-            msg = str(e)
-
-        # TODO: redirect to recipe(rid) page
-        return render_template('bookmark_test.html', msg=msg)
-
-    return render_template('bookmark_test.html', msg=msg)
+    return {'success':True}, 200
 
 
 # TODO: change the naming
