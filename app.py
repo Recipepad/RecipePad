@@ -167,33 +167,17 @@ def create_bookmark():
     return {'success':True}, 200
 
 
-# TODO: change the naming
-@app.route('/get_bookmark', methods=['GET', 'POST'])
-def get_bookmark():
-    if request.method == 'GET':
-        return render_template('get_bookmark_test.html')
+# if success: return {"success":True, "rids":list of int(rid)}
+# if failure: return {"success":False, "error":error msg}
+@app.route('/bookmark/<int:uid>', methods=['GET'])
+def get_bookmark(uid):
+    if db.session.query(UserAccount).filter_by(uid=uid).first() is None:
+        return {'success':False, 'error':"Uid Not Found"}, 400
 
-    # TODO: change data from form to json
-    data = request.form
+    results = db.session.query(UserBookmark.rid).filter_by(uid=uid).all()
+    results = [r[0] for r in results]
+    return {'success':True, 'rids':results}, 200
 
-    required_fields = ['uid']
-    for field in required_fields:
-        if field not in data:
-            abort(400, f"{field} not found in the form")
-
-    uid = data['uid']
-
-    try:
-        if db.session.query(UserAccount).filter_by(uid=uid).first() is None:
-            msg = 'Fail: uid {uid} not found'.format(uid=uid)
-        else:
-            results = db.session.query(UserBookmark.rid).filter_by(uid=uid).all()
-            results = [r[0] for r in results]
-            msg = str(results)
-    except Exception as e:
-        msg = str(e)
-
-    return render_template('get_bookmark_test.html', msg=msg)
 
 
 @app.route('/profile/<int:uid>', methods=['GET'])
