@@ -41,7 +41,7 @@ def get_current_user():
     if not uid:
         return {"error": "Unathorized"}, 401
 
-    return {"uid": uid}, 200
+    return {"uid": uid, "isAuth": True}, 200
 
 
 @app.route('/login', methods=['GET', 'POST'])
