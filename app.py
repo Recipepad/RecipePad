@@ -21,7 +21,7 @@ app.secret_key = "recipe secret key"
 app.config['SESSION_TYPE'] = 'filesystem'
 server_session = Session(app)
 
-CORS(app)
+CORS(app, supports_credentials=True)
 db = SQLAlchemy(app)
 cosmos_client = CosmosClient(config)
 
