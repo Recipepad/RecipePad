@@ -41,7 +41,7 @@ def get_current_user():
     # if not uid:
     #     return {"error": "Unathorized"}, 401
     # TODO figure out how to work on cloud
-    return {"uid": uid, "isAuth": True}, 200
+    return {"isAuth": True}, 200
 
 
 @app.route('/login', methods=['GET', 'POST'])
