@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request, session, redirect, url_for, abort, Response
+from flask import Flask, render_template, request, session, abort
+from flask_bcrypt import Bcrypt
+from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
 from flask_cors import CORS
@@ -10,9 +12,15 @@ from CosmosClient import CosmosClient
 
 config = Config()
 app = Flask(__name__)
-app.secret_key = "recipe secret key"
+
 app.config['SQLALCHEMY_DATABASE_URI'] = config.mysql_uri
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = config.mysql_connect_args
+bcrypt = Bcrypt(app)
+app.secret_key = "recipe secret key"
+
+app.config['SESSION_TYPE'] = 'filesystem'
+server_session = Session(app)
+
 CORS(app)
 db = SQLAlchemy(app)
 cosmos_client = CosmosClient(config)
@@ -25,6 +33,15 @@ from utils import *
 def hello():
     version = db.engine.execute("select VERSION()").all()[0][0]
     return "Hello RecipePad in Cloud with MySQL " + str(version)
+
+
+@app.route("/auth")
+def get_current_user():
+    uid = session.get('uid')
+    if not uid:
+        return {"error": "Unathorized"}, 401
+
+    return {"uid": uid}, 200
 
 
 @app.route('/login', methods=['GET', 'POST'])

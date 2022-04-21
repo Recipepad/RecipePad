@@ -133,3 +133,6 @@ configs/*_dev.yaml
 
 # idea
 .idea/
+
+# session
+flask_session/
