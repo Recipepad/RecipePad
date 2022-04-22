@@ -140,6 +140,35 @@ def create_recipe():
     return response, 200
 
 
+
+# input: {"success":True, "rid":int(rid), "title":str(title), "cover_imgid":str(imgid), "description":str,
+#         "ingredients":json, "steps":json, "tags":json"}   See models.py class Recipe for examples.
+# if success: return {"success": True}
+# if failure: return {"success": False, "error": error msg}
+@app.route('/edit_recipe', methods=['POST'])
+def edit_recipe():
+    data = request.json
+    required_fields = ['rid', 'title', 'description', 'ingredients', 'steps']
+    for field in required_fields:
+        if field not in data:
+            abort(400, f"{field} not found in the form")
+
+    rid = data['rid']
+    title = data['title']
+    description = data['description']
+    ingredients = data['ingredients']
+    steps = data['steps']
+    tags = get_tags_from_description_and_title(description, title)
+
+    if db.session.query(Recipe).filter_by(rid=rid).first() is None:
+        return {'success': False, 'error': 'rid not exists in Recipe table'}, 400
+    db.session.query(Recipe).filter_by(rid=rid).update(
+        {'rid': rid, 'title': title, 'description': description, 'ingredients': ingredients, 'steps':steps, 'tags':tags})
+    db.session.commit()
+    return {'success': True}, 200
+
+
+
 # input: {"uid":uid, "rid":rid}
 # if success: return {"success":True}
 # if failure: return {"success":False, "error":error msg}
@@ -242,7 +271,7 @@ def edit_profile():
 
     if db.session.query(UserAccount).filter_by(uid=uid).first() is None:
         return {'success': False, 'error':"Uid not Found"}, 400
-    db.session.query(UserProfile).update(
+    db.session.query(UserProfile).filter_by(uid=uid).update(
         {'uid': uid, 'nickname': nickname, 'email': email, 'avatar_imgid': avatar_imgid})
     db.session.commit()
     return {'success': True}, 200
