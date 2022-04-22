@@ -305,6 +305,35 @@ def get_recipe(rid):
     return result, 200
 
 
+# input: {"rid":int(rid)}
+# if success: return {"success":True}
+# if failure: return {"success":False, "error": error msg}
+@app.route('/delete_recipe', methods=['POST'])
+def delete_recipe():
+    data = request.json
+
+    required_fields = ['rid']
+    for field in required_fields:
+        if field not in data:
+            abort(400, f"{field} not found in the form")
+
+    rid = data['rid']
+
+    try:
+        if db.session.query(Recipe).filter_by(rid=rid).first() is None:
+            return {'success':False, 'error':"Rid not existed in Recipe Table"}, 400
+        if db.session.query(UserRecipe).filter_by(rid=rid).first() is None:
+            return {'success':False, 'error':"Rid not existed in UserRecipe Table"}, 400
+
+        db.session.query(Recipe).filter_by(rid=rid).delete()
+        db.session.query(UserRecipe).filter_by(rid=rid).delete()
+        db.session.commit()
+    except Exception as e:
+        return {'success':False, 'error': e}, 400
+
+    return {'success':True}, 200
+
+
 # keywords separated by `:`
 @app.route('/search/<keywords>', methods=['GET'])
 def search_recipe_ids_by_keywords(keywords):
