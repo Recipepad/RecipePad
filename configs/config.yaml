@@ -11,3 +11,7 @@ cosmos:
   cosmos_key: "c3vk3rTL6bMcXUXVjBeupwOsuoEpNz29k0qRgZPRNtlTaVOdFcrPRckoteAXN3u6bhkcHWuLGEhiNUpwRj6Whw=="
   cosmos_db: "search"
   cosmos_container: "tags"
+
+blob:
+  blob_uri: "https://recipepadblob.blob.core.windows.net/"
+  blob_container: "images"

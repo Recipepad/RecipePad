@@ -133,8 +133,9 @@ def create_recipe():
     db.session.commit()
 
     response = {
-        'cover_image_url': f'fake/cover/url/{cover_imgid}',
-        'step_image_urls': [f'fake/step/url/{rid}' for rid in step_imgids]
+        'base_url': config.blob_url,
+        'cover_image_id': cover_imgid,
+        'step_image_id': step_imgids
     }
 
     return response, 200

@@ -70,3 +70,15 @@ class Config:
     @property
     def cosmos_container(self):
         return self.config['cosmos']['cosmos_container']
+
+    @property
+    def blob_uri(self):
+        return self.config['blob']['blob_uri']
+
+    @property
+    def blob_container(self):
+        return self.config['blob']['blob_container']
+
+    @property
+    def blob_url(self):
+        return self.blob_uri + self.blob_container + "/"
