@@ -248,6 +248,20 @@ def edit_profile():
     return {'success': True}, 200
 
 
+# input: uid from URL
+# if success: return {"success":True, "rids":list of int(rid)}
+# if failure: return {"success":False, "error":error msg}
+@app.route('/userrecipes/<int:uid>', methods=['GET'])
+def user_recipes(uid):
+    if db.session.query(UserAccount).filter_by(uid=uid).first() is None:
+        return {'success':False, 'error':"Uid Not Found"}, 400
+
+    results = db.session.query(UserRecipe.rid).filter_by(uid=uid).all()
+    results = [r[0] for r in results]
+    return {'success':True, 'rids':results}, 200
+
+
+
 # input: rid from URL
 # if success: return {"success":True, "rid":int(rid), "title":str(title), "cover_imgid":str(imgid), "description":str,
 #                     "ingredients":json, "steps":json, "tags":json"}   See models.py class Recipe for examples.
