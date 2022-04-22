@@ -141,84 +141,124 @@ def create_recipe():
     return response, 200
 
 
-@app.route('/bookmark', methods=['GET', 'POST'])
-def bookmark():
-    msg = ''
 
-    if request.method == 'POST':
-        # TODO: change data from form to json
-        data = request.form
+# input: {"success":True, "rid":int(rid), "title":str(title), "cover_imgid":str(imgid), "description":str,
+#         "ingredients":json, "steps":json, "tags":json"}   See models.py class Recipe for examples.
+# if success: return {"success": True}
+# if failure: return {"success": False, "error": error msg}
+@app.route('/edit_recipe', methods=['POST'])
+def edit_recipe():
+    data = request.json
+    required_fields = ['rid', 'title', 'description', 'ingredients', 'steps']
+    for field in required_fields:
+        if field not in data:
+            abort(400, f"{field} not found in the form")
 
-        required_fields = ['uid', 'rid']
-        for field in required_fields:
-            if field not in data:
-                abort(400, f"{field} not found in the form")
+    rid = data['rid']
+    title = data['title']
+    description = data['description']
+    ingredients = data['ingredients']
+    steps = data['steps']
+    tags = get_tags_from_description_and_title(description, title)
 
-        uid = data['uid']
-        rid = data['rid']
-
-        try:
-            if db.session.query(UserAccount).filter_by(uid=uid).first() is None:
-                msg = 'fail to bookmark ({uid}, {rid}), uid {uid} not found'.format(uid=uid, rid=rid)
-            elif db.session.query(Recipe).filter_by(rid=rid).first() is None:
-                msg = 'fail to bookmark ({uid}, {rid}), rid {rid} not found'.format(uid=uid, rid=rid)
-            else:
-                bookmark = UserBookmark(uid=uid, rid=rid)
-                db.session.add(bookmark)
-                db.session.commit()
-                msg = 'successful bookmark ({uid}, {rid})'.format(uid=uid, rid=rid)
-        except IntegrityError:
-            msg = 'fail to bookmark ({uid}, {rid}): Already bookmarked'.format(uid=uid, rid=rid)
-        except Exception as e:
-            msg = str(e)
-
-        # TODO: redirect to recipe(rid) page
-        return render_template('bookmark_test.html', msg=msg)
-
-    return render_template('bookmark_test.html', msg=msg)
+    if db.session.query(Recipe).filter_by(rid=rid).first() is None:
+        return {'success': False, 'error': 'rid not exists in Recipe table'}, 400
+    db.session.query(Recipe).filter_by(rid=rid).update(
+        {'rid': rid, 'title': title, 'description': description, 'ingredients': ingredients, 'steps':steps, 'tags':tags})
+    db.session.commit()
+    return {'success': True}, 200
 
 
-# TODO: change the naming
-@app.route('/get_bookmark', methods=['GET', 'POST'])
-def get_bookmark():
-    if request.method == 'GET':
-        return render_template('get_bookmark_test.html')
 
-    # TODO: change data from form to json
-    data = request.form
+# input: {"uid":uid, "rid":rid}
+# if success: return {"success":True}
+# if failure: return {"success":False, "error":error msg}
+@app.route('/create_bookmark', methods=['POST'])
+def create_bookmark():
+    data = request.json
 
-    required_fields = ['uid']
+    required_fields = ['uid', 'rid']
     for field in required_fields:
         if field not in data:
             abort(400, f"{field} not found in the form")
 
     uid = data['uid']
+    rid = data['rid']
 
     try:
         if db.session.query(UserAccount).filter_by(uid=uid).first() is None:
-            msg = 'Fail: uid {uid} not found'.format(uid=uid)
+            return {'success':False, 'error':"Uid not Found"}, 400
+        elif db.session.query(Recipe).filter_by(rid=rid).first() is None:
+            return {'success':False, 'error':"Rid not Found"}, 400
         else:
-            results = db.session.query(UserBookmark.rid).filter_by(uid=uid).all()
-            results = [r[0] for r in results]
-            msg = str(results)
+            bookmark = UserBookmark(uid=uid, rid=rid)
+            db.session.add(bookmark)
+            db.session.commit()
+    except IntegrityError:
+        return {'success':False, 'error':"Bookmark already existed"}, 400
+
+    return {'success':True}, 200
+
+
+# input: {"uid":uid, "rid":rid}
+# if success: return {"success":True}
+# if failure: return {"success":False, "error":error msg}
+@app.route('/delete_bookmark', methods=['POST'])
+def delete_bookmark():
+    data = request.json
+
+    required_fields = ['uid', 'rid']
+    for field in required_fields:
+        if field not in data:
+            abort(400, f"{field} not found in the form")
+
+    uid = data['uid']
+    rid = data['rid']
+
+    try:
+        if db.session.query(UserBookmark).filter_by(uid=uid,rid=rid).first() is None:
+            return {'success':False, 'error':"Bookmark not existed"}, 400
+
+        db.session.query(UserBookmark).filter_by(uid=uid,rid=rid).delete()
+        db.session.commit()
     except Exception as e:
-        msg = str(e)
+        return {'success':False, 'error': e}, 400
 
-    return render_template('get_bookmark_test.html', msg=msg)
+    return {'success':True}, 200
 
 
+# input: uid from URL
+# if success: return {"success":True, "rids":list of int(rid)}
+# if failure: return {"success":False, "error":error msg}
+@app.route('/bookmark/<int:uid>', methods=['GET'])
+def get_bookmark(uid):
+    if db.session.query(UserAccount).filter_by(uid=uid).first() is None:
+        return {'success':False, 'error':"Uid Not Found"}, 400
+
+    results = db.session.query(UserBookmark.rid).filter_by(uid=uid).all()
+    results = [r[0] for r in results]
+    return {'success':True, 'rids':results}, 200
+
+
+
+# input: uid from URL
+# if success: return {"uid":int(uid), "nickname":str(nickname), "email":str(email), "avatar_imgid":str(imgid)}
+# if failure: return {"success":False, "error": error msg}
 @app.route('/profile/<int:uid>', methods=['GET'])
 def get_profile(uid):
     if db.session.query(UserAccount).filter_by(uid=uid).first() is None:
-        return {'success': False}, 400
+        return {'success': False, 'error':"Uid not Found"}, 400
     result = db.session.query(UserProfile).filter_by(uid=uid).first()
     result = result.to_dict()
     result['success'] = True
     return result, 200
 
 
+# input: {"uid":int(uid), "nickname":str(nickname), "email":str(email), "avatar_imgid":str(imgid)}
+# if success: return {"success": True}
+# if failure: return {"success": False, "error": error msg}
 @app.route('/profile', methods=['POST'])
-def profile():
+def edit_profile():
     data = request.json
     required_fields = ['uid', 'nickname', 'email', 'avatar_imgid']
     for field in required_fields:
@@ -231,13 +271,31 @@ def profile():
     avatar_imgid = data['avatar_imgid']
 
     if db.session.query(UserAccount).filter_by(uid=uid).first() is None:
-        return {'success': False}, 400
-    db.session.query(UserProfile).update(
+        return {'success': False, 'error':"Uid not Found"}, 400
+    db.session.query(UserProfile).filter_by(uid=uid).update(
         {'uid': uid, 'nickname': nickname, 'email': email, 'avatar_imgid': avatar_imgid})
     db.session.commit()
     return {'success': True}, 200
 
 
+# input: uid from URL
+# if success: return {"success":True, "rids":list of int(rid)}
+# if failure: return {"success":False, "error":error msg}
+@app.route('/userrecipes/<int:uid>', methods=['GET'])
+def user_recipes(uid):
+    if db.session.query(UserAccount).filter_by(uid=uid).first() is None:
+        return {'success':False, 'error':"Uid Not Found"}, 400
+
+    results = db.session.query(UserRecipe.rid).filter_by(uid=uid).all()
+    results = [r[0] for r in results]
+    return {'success':True, 'rids':results}, 200
+
+
+
+# input: rid from URL
+# if success: return {"success":True, "rid":int(rid), "title":str(title), "cover_imgid":str(imgid), "description":str,
+#                     "ingredients":json, "steps":json, "tags":json"}   See models.py class Recipe for examples.
+# if failure: return {"success":False, "error": error msg}
 @app.route('/recipe/<int:rid>', methods=['GET'])
 def get_recipe(rid):
     result = db.session.query(Recipe).filter_by(rid=rid).first()

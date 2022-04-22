@@ -43,7 +43,7 @@ tags = {
 class Recipe(db.Model):
     rid = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(45))
-    cover_imgid = db.Column(db.Integer)
+    cover_imgid = db.Column(db.String(45))
     description = db.Column(db.String(300))
     ingredients = db.Column(db.JSON)
     steps = db.Column(db.JSON)
@@ -79,7 +79,7 @@ class UserProfile(db.Model):
     uid = db.Column(db.Integer, primary_key=True, nullable=False)
     nickname = db.Column(db.String(45), nullable=True)
     email = db.Column(db.String(45), nullable=True)
-    avatar_imgid = db.Column(db.Integer, nullable=True)
+    avatar_imgid = db.Column(db.String(45), nullable=True)
 
     def __repr__(self):
         return f"uid: {self.uid}, nickname: {self.nickname}, email: {self.email}, avatar_imgid: {self.avatar_imgid}"
