@@ -140,6 +140,9 @@ def create_recipe():
     return response, 200
 
 
+# input: {"uid":uid, "rid":rid}
+# if success: return {"success":True}
+# if failure: return {"success":False, "error":error msg}
 @app.route('/create_bookmark', methods=['POST'])
 def create_bookmark():
     data = request.json
@@ -166,6 +169,32 @@ def create_bookmark():
 
     return {'success':True}, 200
 
+
+# input: {"uid":uid, "rid":rid}
+# if success: return {"success":True}
+# if failure: return {"success":False, "error":error msg}
+@app.route('/delete_bookmark', methods=['POST'])
+def delete_bookmark():
+    data = request.json
+
+    required_fields = ['uid', 'rid']
+    for field in required_fields:
+        if field not in data:
+            abort(400, f"{field} not found in the form")
+
+    uid = data['uid']
+    rid = data['rid']
+
+    try:
+        if db.session.query(UserBookmark).filter_by(uid=uid,rid=rid).first() is None:
+            return {'success':False, 'error':"Bookmark not existed"}, 400
+
+        db.session.query(UserBookmark).filter_by(uid=uid,rid=rid).delete()
+        db.session.commit()
+    except Exception as e:
+        return {'success':False, 'error': e}, 400
+
+    return {'success':True}, 200
 
 # if success: return {"success":True, "rids":list of int(rid)}
 # if failure: return {"success":False, "error":error msg}
