@@ -7,22 +7,21 @@ def get_tags_from_description_and_title(description, title):
     return ['food']
 
 
-def get_cover_image_id(uid):
+def get_cover_image_id(uid, img_type="jpg"):
     ts_ms = round(time.time() * 1000)
-    cover_id = f"{uid}-cover-{ts_ms}"
+    cover_id = f"{uid}-cover-{ts_ms}.{img_type}"
     return cover_id
 
 
-# TODO Fulfill with meaningful image cnt
 def get_image_count_from_steps(steps):
-    return 1
+    return len(steps)
 
 
-def get_step_image_ids(uid, cnt):
+def get_step_image_ids(uid, cnt, img_type="jpg"):
     ts_ms = round(time.time() * 1000)
     image_ids = []
     for i in range(cnt):
-        image_id = f"{uid}-step-{ts_ms}-{i}"
+        image_id = f"{uid}-step-{ts_ms}-{i}.{img_type}"
         image_ids.append(image_id)
 
     return image_ids
