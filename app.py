@@ -196,6 +196,8 @@ def delete_bookmark():
 
     return {'success':True}, 200
 
+
+# input: uid from URL
 # if success: return {"success":True, "rids":list of int(rid)}
 # if failure: return {"success":False, "error":error msg}
 @app.route('/bookmark/<int:uid>', methods=['GET'])
@@ -209,18 +211,24 @@ def get_bookmark(uid):
 
 
 
+# input: uid from URL
+# if success: return {"uid":int(uid), "nickname":str(nickname), "email":str(email), "avatar_imgid":str(imgid)}
+# if failure: return {"success":False, "error": error msg}
 @app.route('/profile/<int:uid>', methods=['GET'])
 def get_profile(uid):
     if db.session.query(UserAccount).filter_by(uid=uid).first() is None:
-        return {'success': False}, 400
+        return {'success': False, 'error':"Uid not Found"}, 400
     result = db.session.query(UserProfile).filter_by(uid=uid).first()
     result = result.to_dict()
     result['success'] = True
     return result, 200
 
 
+# input: {"uid":int(uid), "nickname":str(nickname), "email":str(email), "avatar_imgid":str(imgid)}
+# if success: return {"success": True}
+# if failure: return {"success": False, "error": error msg}
 @app.route('/profile', methods=['POST'])
-def create_profile():
+def edit_profile():
     data = request.json
     required_fields = ['uid', 'nickname', 'email', 'avatar_imgid']
     for field in required_fields:
@@ -233,13 +241,17 @@ def create_profile():
     avatar_imgid = data['avatar_imgid']
 
     if db.session.query(UserAccount).filter_by(uid=uid).first() is None:
-        return {'success': False}, 400
+        return {'success': False, 'error':"Uid not Found"}, 400
     db.session.query(UserProfile).update(
         {'uid': uid, 'nickname': nickname, 'email': email, 'avatar_imgid': avatar_imgid})
     db.session.commit()
     return {'success': True}, 200
 
 
+# input: rid from URL
+# if success: return {"success":True, "rid":int(rid), "title":str(title), "cover_imgid":str(imgid), "description":str,
+#                     "ingredients":json, "steps":json, "tags":json"}   See models.py class Recipe for examples.
+# if failure: return {"success":False, "error": error msg}
 @app.route('/recipe/<int:rid>', methods=['GET'])
 def get_recipe(rid):
     result = db.session.query(Recipe).filter_by(rid=rid).first()
