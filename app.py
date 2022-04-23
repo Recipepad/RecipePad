@@ -110,7 +110,7 @@ def create_recipe():
     ingredients = request.json['ingredients']  # JSON
     steps = request.json['steps']  # JSON
 
-    tags = get_tags_from_description_and_title(description, title)
+    tags = get_tags_from_description_and_title(description, title, ingredients)
     step_img_cnt = get_image_count_from_steps(steps)
     cover_imgid = get_cover_image_id(uid)
     step_imgids = get_step_image_ids(uid, step_img_cnt)
@@ -159,7 +159,7 @@ def edit_recipe():
     description = data['description']
     ingredients = data['ingredients']
     steps = data['steps']
-    tags = get_tags_from_description_and_title(description, title)
+    tags = get_tags_from_description_and_title(description, title, ingredients)
 
     if db.session.query(Recipe).filter_by(rid=rid).first() is None:
         return {'success': False, 'error': 'rid not exists in Recipe table'}, 400
@@ -306,10 +306,20 @@ def get_recipe(rid):
     return result, 200
 
 
+# input: rids from URL (separated by ";")
+# if success: return {"success":True, "rids":list of jsons (list of recipes)}
+# if failure: return {"success":False, "error": error msg}
+@app.route('/recipes/<rids>', methods=['GET'])
+def get_recipes(rids):
+    rids = rids.split(';')
+    try:
+        results = db.session.query(Recipe).filter(Recipe.rid.in_(rids)).all()
+        results = [r.to_dict() for r in results]
+    except Exception as e:
+        return {'success':False, 'error':e}, 400
 
-@app.route('/recipes', methods=['GET'])
-def get_recipes():
-    pass
+    result = {'rids':results, 'success':True}
+    return result, 200
 
 
 # input: {"rid":int(rid)}
@@ -341,10 +351,10 @@ def delete_recipe():
     return {'success':True}, 200
 
 
-# keywords separated by `:`
+# keywords separated by `;`
 @app.route('/search/<keywords>', methods=['GET'])
 def search_recipe_ids_by_keywords(keywords):
-    keywords = keywords.split(':')
+    keywords = keywords.split(';')
     rids = []
     for keyword in keywords:
         rids.extend(cosmos_client.get_rids(keyword))
