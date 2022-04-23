@@ -37,11 +37,11 @@ def hello():
 
 @app.route("/auth")
 def get_current_user():
-    uid = session.get('uid')
-    if not uid:
-        return {"error": "Unathorized"}, 401
-
-    return {"uid": uid, "isAuth": True}, 200
+    # uid = session.get('uid')
+    # if not uid:
+    #     return {"error": "Unathorized"}, 401
+    # TODO figure out how to work on cloud
+    return {"isAuth": True}, 200
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -133,8 +133,9 @@ def create_recipe():
     db.session.commit()
 
     response = {
-        'cover_image_url': f'fake/cover/url/{cover_imgid}',
-        'step_image_urls': [f'fake/step/url/{rid}' for rid in step_imgids]
+        'base_url': config.blob_url,
+        'cover_image_id': cover_imgid,
+        'step_image_id': step_imgids
     }
 
     return response, 200
