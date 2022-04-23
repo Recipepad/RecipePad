@@ -110,7 +110,7 @@ def create_recipe():
     ingredients = request.json['ingredients']  # JSON
     steps = request.json['steps']  # JSON
 
-    tags = get_tags_from_description_and_title(description, title)
+    tags = get_tags_from_description_and_title(description, title, ingredients)
     step_img_cnt = get_image_count_from_steps(steps)
     cover_imgid = get_cover_image_id(uid)
     step_imgids = get_step_image_ids(uid, step_img_cnt)
@@ -159,7 +159,7 @@ def edit_recipe():
     description = data['description']
     ingredients = data['ingredients']
     steps = data['steps']
-    tags = get_tags_from_description_and_title(description, title)
+    tags = get_tags_from_description_and_title(description, title, ingredients)
 
     if db.session.query(Recipe).filter_by(rid=rid).first() is None:
         return {'success': False, 'error': 'rid not exists in Recipe table'}, 400
