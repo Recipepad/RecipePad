@@ -318,7 +318,7 @@ def get_recipes(rids):
     except Exception as e:
         return {'success':False, 'error':e}, 400
 
-    result = {'rids':results, 'success':True}
+    result = {'recipes':results, 'success':True}
     return result, 200
 
 
