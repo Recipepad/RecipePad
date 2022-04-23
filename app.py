@@ -307,7 +307,7 @@ def get_recipe(rid):
 
 
 # input: rids from URL (separated by ";")
-# if success: return {"success":True, "rids":list of jsons (list of recipes)}
+# if success: return {"success":True, "recipes":list of jsons (list of recipes)}
 # if failure: return {"success":False, "error": error msg}
 @app.route('/recipes/<rids>', methods=['GET'])
 def get_recipes(rids):
