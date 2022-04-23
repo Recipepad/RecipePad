@@ -146,7 +146,7 @@ def create_recipe():
 #         "ingredients":json, "steps":json, "tags":json"}   See models.py class Recipe for examples.
 # if success: return {"success": True}
 # if failure: return {"success": False, "error": error msg}
-@app.route('/edit_recipe', methods=['POST'])
+@app.route('/recipe', methods=['PUT'])
 def edit_recipe():
     data = request.json
     required_fields = ['rid', 'title', 'description', 'ingredients', 'steps']
@@ -173,7 +173,7 @@ def edit_recipe():
 # input: {"uid":uid, "rid":rid}
 # if success: return {"success":True}
 # if failure: return {"success":False, "error":error msg}
-@app.route('/create_bookmark', methods=['POST'])
+@app.route('/bookmark', methods=['POST'])
 def create_bookmark():
     data = request.json
 
@@ -203,7 +203,7 @@ def create_bookmark():
 # input: {"uid":uid, "rid":rid}
 # if success: return {"success":True}
 # if failure: return {"success":False, "error":error msg}
-@app.route('/delete_bookmark', methods=['POST'])
+@app.route('/bookmark', methods=['DELETE'])
 def delete_bookmark():
     data = request.json
 
@@ -281,7 +281,7 @@ def edit_profile():
 # input: uid from URL
 # if success: return {"success":True, "rids":list of int(rid)}
 # if failure: return {"success":False, "error":error msg}
-@app.route('/userrecipes/<int:uid>', methods=['GET'])
+@app.route('/user/<int:uid>/recipes', methods=['GET'])
 def user_recipes(uid):
     if db.session.query(UserAccount).filter_by(uid=uid).first() is None:
         return {'success':False, 'error':"Uid Not Found"}, 400
@@ -306,10 +306,16 @@ def get_recipe(rid):
     return result, 200
 
 
+
+@app.route('/recipes', methods=['GET'])
+def get_recipes():
+    pass
+
+
 # input: {"rid":int(rid)}
 # if success: return {"success":True}
 # if failure: return {"success":False, "error": error msg}
-@app.route('/delete_recipe', methods=['POST'])
+@app.route('/recipe', methods=['DELETE'])
 def delete_recipe():
     data = request.json
 
