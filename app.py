@@ -325,17 +325,8 @@ def get_recipes(rids):
 # input: {"rid":int(rid)}
 # if success: return {"success":True}
 # if failure: return {"success":False, "error": error msg}
-@app.route('/recipe', methods=['DELETE'])
-def delete_recipe():
-    data = request.json
-
-    required_fields = ['rid']
-    for field in required_fields:
-        if field not in data:
-            abort(400, f"{field} not found in the form")
-
-    rid = data['rid']
-
+@app.route('/recipe/<rid>', methods=['DELETE'])
+def delete_recipe(rid):
     try:
         if db.session.query(Recipe).filter_by(rid=rid).first() is None:
             return {'success':False, 'error':"Rid not existed in Recipe Table"}, 400
