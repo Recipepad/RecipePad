@@ -195,7 +195,7 @@ def create_bookmark():
             db.session.add(bookmark)
             db.session.commit()
     except IntegrityError:
-        return {'success':False, 'error':"Bookmark already existed"}, 400
+        return {'success':False, 'error':"Bookmark already existed"}, 200
 
     return {'success':True}, 200
 
