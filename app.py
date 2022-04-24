@@ -133,6 +133,7 @@ def create_recipe():
     db.session.commit()
 
     response = {
+        'success': True,
         'base_url': config.blob_url,
         'cover_image_id': cover_imgid,
         'step_image_id': step_imgids
