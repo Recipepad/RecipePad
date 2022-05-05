@@ -343,6 +343,50 @@ def delete_recipe(rid):
     return {'success':True}, 200
 
 
+# input uid from URL
+# if success: return {"rids":list of rids, "success":True}
+# if failure: return {"success":False, "error":error msg}
+@app.route('/recommend/<uid>', methods=['GET'])
+def recommend_by_uid(uid):
+    top_k = 3
+
+    if db.session.query(UserAccount).filter_by(uid=uid).first() is None:
+        return {'success':False, 'error':"Uid Not Found"}, 400
+
+    results = db.session.query(UserBookmark.rid).filter_by(uid=uid).all()
+    rids_owned = [r[0] for r in results]
+
+    if len(rids_owned) == 0:
+        # TODO: uncomment when get_default_recommend_rids is implemented
+        # default_rids = get_default_recommend_rids()
+        # return {'success':True, 'rids':default_rids}
+        return {'success':False, 'error':'Default Recommendation Not Implemented.'}, 400
+
+    results = db.session.query(Recipe.tags).filter(Recipe.rid.in_(rids_owned)).all()
+    results = [r[0] for r in results]
+    tags = dict()
+    for tag_list in results:
+        for tag in tag_list:
+            if tag in tags:
+                tags[tag] += 1
+            else:
+                tags[tag] = 1
+
+    rids_score = dict()
+    for tag, weight in tags.items():
+        rids = cosmos_client.get_rids(tag)
+        for rid in rids:
+            if rid in rids_score:
+                rids_score[rid] += weight
+            else:
+                rids_score[rid] = weight
+
+    result = sorted(rids_score, key=lambda x:rids_score[x], reverse=True)[:top_k]
+
+    # return {"result": rids_score, "tags":tags, "rids":result, 'success':True}, 200
+    return {'rids':result, 'success':True}, 200
+
+
 # keywords separated by `;`
 @app.route('/search/<keywords>', methods=['GET'])
 def search_recipe_ids_by_keywords(keywords):

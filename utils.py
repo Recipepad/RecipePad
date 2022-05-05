@@ -32,3 +32,8 @@ def get_updated_steps_with_image_ids(steps, image_ids):
         steps[idx]['image_id'] = image_ids[idx]
 
     return steps
+
+
+# TODO: fill in default recommendation list
+def get_default_recommend_rids():
+    return []
