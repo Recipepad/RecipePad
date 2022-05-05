@@ -358,9 +358,9 @@ def recommend_by_uid(uid):
 
     if len(rids_owned) == 0:
         # TODO: uncomment when get_default_recommend_rids is implemented
-        # default_rids = get_default_recommend_rids()
-        # return {'success':True, 'rids':default_rids}
-        return {'success':False, 'error':'Default Recommendation Not Implemented.'}, 400
+        default_rids = get_default_recommend_rids()
+        return {'success':True, 'rids':default_rids}, 200
+        # return {'success':False, 'error':'Default Recommendation Not Implemented.'}, 400
 
     results = db.session.query(Recipe.tags).filter(Recipe.rid.in_(rids_owned)).all()
     results = [r[0] for r in results]
