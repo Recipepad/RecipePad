@@ -376,10 +376,11 @@ def recommend_by_uid(uid):
     for tag, weight in tags.items():
         rids = cosmos_client.get_rids(tag)
         for rid in rids:
-            if rid in rids_score:
-                rids_score[rid] += weight
-            else:
-                rids_score[rid] = weight
+            if rid not in rids_owned:
+                if rid in rids_score:
+                    rids_score[rid] += weight
+                else:
+                    rids_score[rid] = weight
 
     result = sorted(rids_score, key=lambda x:rids_score[x], reverse=True)[:top_k]
 
