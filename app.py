@@ -204,18 +204,8 @@ def create_bookmark():
 # input: {"uid":uid, "rid":rid}
 # if success: return {"success":True}
 # if failure: return {"success":False, "error":error msg}
-@app.route('/bookmark', methods=['DELETE'])
-def delete_bookmark():
-    data = request.json
-
-    required_fields = ['uid', 'rid']
-    for field in required_fields:
-        if field not in data:
-            abort(400, f"{field} not found in the form")
-
-    uid = data['uid']
-    rid = data['rid']
-
+@app.route('/bookmark/<rid>/<uid>', methods=['DELETE'])
+def delete_bookmark(rid, uid):
     try:
         if db.session.query(UserBookmark).filter_by(uid=uid,rid=rid).first() is None:
             return {'success':False, 'error':"Bookmark not existed"}, 400
