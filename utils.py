@@ -4,7 +4,7 @@ import json
 
 # TODO Fulfill with meaningful tags
 def get_tags_from_description_and_title(description, title, ingredients):
-    return ['food'] + [t.lower() for t in title.split()] + [i.lower() for i in ingredients.keys()]
+    return list(set(['food'] + [t.lower() for t in title.split()] + [i.lower() for i in ingredients.keys()]))
 
 
 def get_cover_image_id(uid, img_type="jpg"):
