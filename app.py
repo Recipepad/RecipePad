@@ -382,10 +382,14 @@ def recommend_by_uid(uid):
 @app.route('/search/<keywords>', methods=['GET'])
 def search_recipe_ids_by_keywords(keywords):
     keywords = keywords.split(';')
-    rids = []
-    for keyword in keywords:
-        rids.extend(cosmos_client.get_rids(keyword))
+    if len(keywords) == 0:
+        return {"rids": []}, 200
 
+    rid_sets = []
+    for keyword in keywords:
+        rid_sets.append(set(cosmos_client.get_rids(keyword)))
+
+    rids = list(rid_sets[0].intersection(*rid_sets))
     return {"rids": rids}, 200
 
 
