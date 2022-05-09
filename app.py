@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, abort
+from flask import Flask, request, session, abort
 from flask_bcrypt import Bcrypt
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
@@ -31,8 +31,7 @@ from utils import *
 
 @app.route("/hello")
 def hello():
-    version = db.engine.execute("select VERSION()").all()[0][0]
-    return "Hello RecipePad in Cloud with MySQL " + str(version)
+    return "Hello RecipePad"
 
 
 @app.route("/auth")
