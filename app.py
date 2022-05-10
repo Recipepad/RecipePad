@@ -292,12 +292,12 @@ def user_recipes(uid):
 # if failure: return {"success":False, "error": error msg}
 @app.route('/recipe/<int:rid>', methods=['GET'])
 def get_recipe(rid):
-    cached_recipe = redis.get(rid)
-    if cached_recipe is not None:
-        print("Load recipe from cahce")
-        result = json.loads(cached_recipe)
-        result['success'] = True
-        return result, 200
+    # cached_recipe = redis.get(rid)
+    # if cached_recipe is not None:
+    #     print("Load recipe from cahce")
+    #     result = json.loads(cached_recipe)
+    #     result['success'] = True
+    #     return result, 200
 
     result = db.session.query(Recipe).filter_by(rid=rid).first()
     if result is None:
