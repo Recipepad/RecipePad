@@ -407,15 +407,24 @@ def search_recipe_ids_by_keywords(keywords):
     return {"rids": rids}, 200
 
 
+# get following_uids hat `uid` is following
+@app.route('/following/<uid>', methods=['GET'])
+def get_followings(uid):
+    uids = feed_client.get_following_uids(uid)
+    return {'success': True, "following_uids": uids}, 200
+
+
 # uid follows followed_id
 @app.route('/follow/<uid>/<followed_id>', methods=['PUT'])
 def create_follow(uid, followed_id):
+    feed_client.add_following_uid(uid, followed_id)
     feed_client.add_follower_uid(followed_id, uid)
     return {'success': True}, 200
 
 
 @app.route('/follow/<uid>/<followed_id>', methods=['DELETE'])
 def unfollow(uid, followed_id):
+    feed_client.remove_following_uid(uid, followed_id)
     feed_client.remove_follower_uid(followed_id, uid)
     return {'success': True}, 200
 
