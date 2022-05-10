@@ -420,6 +420,12 @@ def unfollow(uid, followed_id):
     return {'success': True}, 200
 
 
+@app.route('/feed/<uid>', methods=['GET'])
+def get_feeds(uid):
+    rids = feed_client.get_news_rids(uid)
+    return {'success': True, "rids": rids}, 200
+
+
 @app.route('/feed/<uid>/<rid>', methods=['DELETE'])
 def consume_feed(uid, rid):
     feed_client.remove_news_rid(uid, rid)
