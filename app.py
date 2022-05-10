@@ -120,6 +120,7 @@ def create_recipe():
 
     recipe = Recipe(
         title=title,
+        uid=uid,
         cover_imgid=cover_imgid,
         description=description,
         ingredients=ingredients,

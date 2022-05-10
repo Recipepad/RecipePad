@@ -42,6 +42,7 @@ tags = {
 """
 class Recipe(db.Model):
     rid = db.Column(db.Integer, primary_key=True)
+    uid = db.Column(db.Integer)
     title = db.Column(db.String(45))
     cover_imgid = db.Column(db.String(45))
     description = db.Column(db.String(300))
