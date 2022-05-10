@@ -11,6 +11,9 @@ class Config:
         else:
             config_path = 'configs/config.yaml'
 
+        print(os.environ)
+        print("Using config path: " + config_path)
+
         with open(config_path, 'r') as f:
             try:
                 self.config = yaml.safe_load(f)
@@ -82,3 +85,16 @@ class Config:
     @property
     def blob_url(self):
         return self.blob_uri + self.blob_container + "/"
+
+    @property
+    def redis_host(self):
+        return self.config['redis']['redis_host']
+
+    @property
+    def redis_password(self):
+        return self.config['redis']['redis_password']
+
+# if __name__ == '__main__':
+#     c = Config()
+#     print(c.redis_host)
+#     print(c.redis_password)

@@ -9,3 +9,4 @@ azure-cosmos==4.1.0
 flask-bcrypt==1.0.1
 flask-session
 redis
+flask-redis

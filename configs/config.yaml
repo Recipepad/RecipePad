@@ -15,3 +15,7 @@ cosmos:
 blob:
   blob_uri: "https://recipepadblob.blob.core.windows.net/"
   blob_container: "images"
+
+redis:
+  redis_host: "recipepad.redis.cache.windows.net"
+  redis_password: "GCkr5egYWdS8EarFrZpJkRmIHwXR1oTT7AzCaBl2uOY="

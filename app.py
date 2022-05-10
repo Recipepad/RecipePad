@@ -4,6 +4,8 @@ from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
 from flask_cors import CORS
+import redis
+import json
 
 import os
 
@@ -24,6 +26,7 @@ server_session = Session(app)
 CORS(app, supports_credentials=True)
 db = SQLAlchemy(app)
 cosmos_client = CosmosClient(config)
+redis = redis.StrictRedis(host=config.redis_host, port=6380, db=0, password=config.redis_password, ssl=True)
 
 from models import *
 from utils import *
@@ -288,10 +291,19 @@ def user_recipes(uid):
 # if failure: return {"success":False, "error": error msg}
 @app.route('/recipe/<int:rid>', methods=['GET'])
 def get_recipe(rid):
+    cached_recipe = redis.get(rid)
+    if cached_recipe is not None:
+        print("Load recipe from cahce")
+        result = json.loads(cached_recipe)
+        result['success'] = True
+        return result, 200
+
     result = db.session.query(Recipe).filter_by(rid=rid).first()
     if result is None:
         return {'success': False, 'error': 'rid not exists in Recipe table'}, 400
     result = result.to_dict()
+    print("Store recipe into cache")
+    redis.set(rid, json.dumps(result))
     result['success'] = True
     return result, 200
 
