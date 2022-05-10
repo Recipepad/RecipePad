@@ -14,12 +14,22 @@ class FeedClient:
 
         feed_db = client.get_database_client("feed")
         self.follow_container = feed_db.get_container_client("follow")
+        self.news_container = feed_db.get_container_client("news")
 
     def get_follower_uids(self, uid):
         key = str(uid)
         try:
             response = self.follow_container.read_item(item=key, partition_key=key)
             value = response.get("follower_uids")
+        except exceptions.CosmosHttpResponseError as e:
+            value = []
+        return value
+
+    def get_news_rids(self, uid):
+        key = str(uid)
+        try:
+            response = self.news_container.read_item(item=key, partition_key=key)
+            value = response.get("rids")
         except exceptions.CosmosHttpResponseError as e:
             value = []
         return value
@@ -44,15 +54,32 @@ class FeedClient:
         body = self._construct_follower_body(str(uid), follower_uids)
         self.follow_container.upsert_item(body=body)
 
+    def remove_news_rid(self, uid, rid):
+        rids = self.get_news_rids(uid)
+
+        if rids is None or (rid not in rids):
+            return
+
+        rids.remove(rid)
+        body = self._construct_news_body(str(uid), rids)
+        self.news_container.upsert_item(body=body)
+
     def _construct_follower_body(self, key, val):
         return {
             "id": key,
             "follower_uids": val
         }
 
+    def _construct_news_body(self, key, val):
+        return {
+            "id": key,
+            "rids": val
+        }
+
 
 # if __name__ == "__main__":
 #     config = Config()
 #     c = FeedClient(config)
-#     c.remove_follower_uid(1, 4)
-#     print(c.get_follower_uids(1))
+#     # c.remove_follower_uid(1, 4)
+#     c.remove_news_rid(1, 1)
+#     print(c.get_news_rids(1))
