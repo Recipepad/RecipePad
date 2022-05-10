@@ -51,12 +51,12 @@ class Recipe(db.Model):
     tags = db.Column(db.JSON)
 
     def __repr__(self):
-        return f"rid: {self.rid}, title: {self.title}, cover_imgid: {self.cover_imgid}, " \
+        return f"rid: {self.rid}, uid: {self.uid}, title: {self.title}, cover_imgid: {self.cover_imgid}, " \
                f"description: {self.description}, ingredients: {self.ingredients}, steps: {self.steps}, " \
                f"tags: {self.tags}"
 
     def to_dict(self):
-        return {'rid':self.rid, 'title':self.title, 'cover_imgid':self.cover_imgid, \
+        return {'rid':self.rid, 'uid':self.uid, 'title':self.title, 'cover_imgid':self.cover_imgid, \
                 'description':self.description, 'ingredients':self.ingredients, 'steps':self.steps, \
                 'tags':self.tags}
 
