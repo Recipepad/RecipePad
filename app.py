@@ -11,6 +11,7 @@ import os
 
 from config import Config
 from CosmosClient import CosmosClient
+from FeedClient import FeedClient
 
 config = Config()
 app = Flask(__name__)
@@ -26,6 +27,7 @@ server_session = Session(app)
 CORS(app, supports_credentials=True)
 db = SQLAlchemy(app)
 cosmos_client = CosmosClient(config)
+feed_client = FeedClient(config)
 redis = redis.StrictRedis(host=config.redis_host, port=6380, db=0, password=config.redis_password, ssl=True)
 
 from models import *
@@ -403,6 +405,19 @@ def search_recipe_ids_by_keywords(keywords):
 
     rids = list(rid_sets[0].intersection(*rid_sets))
     return {"rids": rids}, 200
+
+
+# uid follows followed_id
+@app.route('/follow/<uid>/<followed_id>', methods=['PUT'])
+def create_follow(uid, followed_id):
+    feed_client.add_follower_uid(followed_id, uid)
+    return {'success': True}, 200
+
+
+@app.route('/follow/<uid>/<followed_id>', methods=['DELETE'])
+def unfollow(uid, followed_id):
+    feed_client.remove_follower_uid(followed_id, uid)
+    return {'success': True}, 200
 
 
 if __name__ == "__main__":
