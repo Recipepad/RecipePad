@@ -250,6 +250,22 @@ def get_profile(uid):
     return result, 200
 
 
+# input: uids from URL (separated by ";")
+@app.route('/profiles/<uids>', methods=['GET'])
+def get_profiles(uids):
+    uids = uids.split(';')
+    try:
+        results = db.session.query(UserProfile).filter(UserProfile.uid.in_(uids)).all()
+        print(results)
+        results = [r.to_dict() for r in results]
+    except Exception as e:
+        return {'success': False, 'error': e}, 400
+
+    result = {'profiles': results, 'success': True}
+    return result, 200
+
+
+
 # input: {"uid":int(uid), "nickname":str(nickname), "email":str(email), "avatar_imgid":str(imgid)}
 # if success: return {"success": True}
 # if failure: return {"success": False, "error": error msg}
