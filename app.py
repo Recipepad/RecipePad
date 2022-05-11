@@ -400,9 +400,16 @@ def search_v2(uid, keywords, top_k=3):
     rids_owned = [r[0] for r in results]
 
     if len(rids_owned) == 0:
-        results = db.session.query(UserBookmark.rid, func.count(UserBookmark.uid)).group_by(UserBookmark.rid).order_by(
-            func.count(UserBookmark.uid)).limit(top_k)
-        results = [r[0] for r in results]
+        keywords = keywords.split(';')
+        rids = set()
+        for keyword in keywords:
+            rids.update(cosmos_client.get_rids(keyword))
+
+        results = db.session.query(UserBookmark.rid, func.count(UserBookmark.uid))\
+            .filter(UserBookmark.rid.in_(rids)).group_by(UserBookmark.rid).order_by(func.count(UserBookmark.uid)).limit(top_k)
+
+        popular = {r[0]:i for i,r in enumerate(results)}
+        results = sorted(rids, key=lambda r : popular[r] if r in popular else top_k)[:top_k]
         return {'success': True, 'rids': results}, 200
 
     results = db.session.query(Recipe.tags).filter(Recipe.rid.in_(rids_owned)).all()
