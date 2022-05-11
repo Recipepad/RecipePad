@@ -85,6 +85,7 @@ class FeedClient:
         self.following_container.upsert_item(body=body)
 
     def remove_news_rid(self, uid, rid):
+        rid = int(rid)
         rids = self.get_news_rids(uid)
 
         if rids is None or (rid not in rids):
