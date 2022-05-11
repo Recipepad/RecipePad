@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, session, abort
 from flask_bcrypt import Bcrypt
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from flask_cors import CORS
 
@@ -357,9 +358,10 @@ def recommend_by_uid(uid):
     rids_owned = [r[0] for r in results]
 
     if len(rids_owned) == 0:
-        # TODO: uncomment when get_default_recommend_rids is implemented
-        default_rids = get_default_recommend_rids()
-        return {'success':True, 'rids':default_rids}, 200
+        #default_rids = get_default_recommend_rids()
+        results = db.session.query(UserBookmark.rid, func.count(UserBookmark.uid)).group_by(UserBookmark.rid).order_by(func.count(UserBookmark.uid)).limit(top_k)
+        results = [r[0] for r in results]
+        return {'success':True, 'rids':results}, 200
         # return {'success':False, 'error':'Default Recommendation Not Implemented.'}, 400
 
     results = db.session.query(Recipe.tags).filter(Recipe.rid.in_(rids_owned)).all()
