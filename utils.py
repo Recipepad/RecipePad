@@ -2,7 +2,6 @@ import time
 import json
 
 
-# TODO Fulfill with meaningful tags
 def get_tags_from_description_and_title(description, title, ingredients):
     return list(set([t.lower() for t in title.split()] + [i.lower() for i in ingredients.keys()]))
 
@@ -34,6 +33,5 @@ def get_updated_steps_with_image_ids(steps, image_ids):
     return steps
 
 
-# TODO: fill in default recommendation list
 def get_default_recommend_rids():
     return []
